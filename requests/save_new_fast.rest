@@ -1,0 +1,8 @@
+POST http://localhost:3001/api/history
+Content-Type: application/json
+
+{
+	"endDate": "07/15/2022",
+	"hours": "13",
+	"userName":"emday4prez"
+}
