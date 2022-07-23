@@ -3,6 +3,8 @@ const app = express()
 const morgan = require('morgan')
 const cors = require('cors')
 
+app.use(cors())
+
 const requestLogger = (request, response, next) => {
   console.log('Method:', request.method)
   console.log('Path:  ', request.path)
@@ -21,19 +23,161 @@ app.use(requestLogger)
 
 
 let fastingHistory = [
- {
-  id:1,
-  endDate: "06/14/2022",
-  hours: 14,
-  userName:"emday4prez"
- }, 
- {
-  id:2,
-  endDate: "07/12/2022",
-  hours: 15,
-  userName:"emday4prez"
- }
-]
+    {
+      "id": 22860864061,
+      "startDate": "2022-07-01T23:56:00.000Z",
+      "endDate": "2022-07-02T16:55:00.000Z",
+      "duration": {
+        "years": 0,
+        "months": 0,
+        "days": 0,
+        "hours": 16,
+        "minutes": 59,
+        "seconds": 0
+      },
+      "hours": 17
+    },
+    {
+      "id": 7750554688,
+      "startDate": "2022-07-19T10:29:17.836Z",
+      "endDate": "2022-07-20T11:29:00.000Z",
+      "duration": {
+        "years": 0,
+        "months": 0,
+        "days": 0,
+        "hours": 13,
+        "minutes": 59,
+        "seconds": 42
+      },
+      "hours": 8
+    },
+    {
+      "id": 27083658121,
+      "startDate": "2022-06-22T00:30:00.000Z",
+      "endDate": "2022-06-22T18:00:00.000Z",
+      "duration": {
+        "years": 0,
+        "months": 0,
+        "days": 0,
+        "hours": 17,
+        "minutes": 30,
+        "seconds": 0
+      },
+      "hours": 18
+    },
+    {
+      "id": 23867644132,
+      "startDate": "2022-06-22T23:30:00.000Z",
+      "endDate": "2022-06-23T21:30:00.000Z",
+      "duration": {
+        "years": 0,
+        "months": 0,
+        "days": 0,
+        "hours": 22,
+        "minutes": 0,
+        "seconds": 0
+      },
+      "hours": 22
+    },
+    {
+      "id": 8669837737,
+      "startDate": "2022-06-24T00:14:00.000Z",
+      "endDate": "2022-06-24T18:00:00.000Z",
+      "duration": {
+        "years": 0,
+        "months": 0,
+        "days": 0,
+        "hours": 17,
+        "minutes": 46,
+        "seconds": 0
+      },
+      "hours": 18
+    },
+    {
+      "id": 17226973181,
+      "startDate": "2022-06-24T23:30:00.000Z",
+      "endDate": "2022-06-25T15:30:00.000Z",
+      "duration": {
+        "years": 0,
+        "months": 0,
+        "days": 0,
+        "hours": 16,
+        "minutes": 0,
+        "seconds": 0
+      },
+      "hours": 16
+    },
+    {
+      "id": 7544708881,
+      "startDate": "2022-06-27T01:00:00.000Z",
+      "endDate": "2022-06-27T17:08:00.000Z",
+      "duration": {
+        "years": 0,
+        "months": 0,
+        "days": 0,
+        "hours": 16,
+        "minutes": 8,
+        "seconds": 0
+      },
+      "hours": 16
+    },
+    {
+      "id": 11815111735,
+      "startDate": "2022-06-28T00:00:00.000Z",
+      "endDate": "2022-06-28T18:00:00.000Z",
+      "duration": {
+        "years": 0,
+        "months": 0,
+        "days": 0,
+        "hours": 18,
+        "minutes": 0,
+        "seconds": 0
+      },
+      "hours": 18
+    },
+    {
+      "id": 24749605378,
+      "startDate": "2022-06-29T00:03:00.000Z",
+      "endDate": "2022-06-29T16:00:00.000Z",
+      "duration": {
+        "years": 0,
+        "months": 0,
+        "days": 0,
+        "hours": 15,
+        "minutes": 57,
+        "seconds": 0
+      },
+      "hours": 16
+    },
+    {
+      "id": 16633980658,
+      "startDate": "2022-06-30T01:08:00.000Z",
+      "endDate": "2022-06-30T18:04:00.000Z",
+      "duration": {
+        "years": 0,
+        "months": 0,
+        "days": 0,
+        "hours": 16,
+        "minutes": 56,
+        "seconds": 0
+      },
+      "hours": 17
+    },
+    {
+      "id": 22742282996,
+      "startDate": "2022-07-23T00:00:00.000Z",
+      "endDate": "2022-07-23T17:28:48.028Z",
+      "duration": {
+        "years": 0,
+        "months": 0,
+        "days": 0,
+        "hours": 17,
+        "minutes": 28,
+        "seconds": 48
+      },
+      "hours": 17
+    }
+  ]
 const generateId = () => {
   const maxId = notes.length > 0
     ? Math.max(...notes.map(n => n.id))
@@ -88,25 +232,22 @@ app.post('/api/history', (request, response) => {
  response.json(fastToSave)
 })
 
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } else if (error.name === 'ValidationError'){
+    return response.status(400).json({error: error.message})
+  }
+  next(error)
+}
+app.use(errorHandler)
 
 const unknownEndpoint = (request, response) => {
   response.status(404).send({ error: 'unknown endpoint' })
 }
 app.use(unknownEndpoint)
 
-const errorHandler = (error, request, response, next) => {
-  console.error(error.message)
-
-  if (error.name === 'CastError') {
-    return response.status(400).send({ error: 'malformatted id' })
-  } else if (error.name === 'ValidationError'){
-    return response.status(400).json({error: error.message})
-  }
-
-  next(error)
-}
-app.use(errorHandler)
-
-const PORT = 3001
+const PORT = process.env.PORT || 3001
 app.listen(PORT)
 console.log(`server running on port ${PORT}`)
