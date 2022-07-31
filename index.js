@@ -181,8 +181,8 @@ let fastingHistory = [
     }
   ]
 const generateId = () => {
-  const maxId = notes.length > 0
-    ? Math.max(...notes.map(n => n.id))
+  const maxId = fastingHistory.length > 0
+    ? Math.max(...fastingHistory.map(n => n.id))
     : 0
   return maxId + 1
 }
