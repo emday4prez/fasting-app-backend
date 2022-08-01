@@ -1,7 +1,9 @@
+require('dotenv').config()
 const express = require('express')
 const app = express()
 const morgan = require('morgan')
 const cors = require('cors')
+const Fast = require('./models/fast')
 
 app.use(cors())
 app.use(express.static('build'))
@@ -180,6 +182,8 @@ let fastingHistory = [
       "hours": 17
     }
   ]
+
+
 const generateId = () => {
   const maxId = fastingHistory.length > 0
     ? Math.max(...fastingHistory.map(n => n.id))
@@ -195,7 +199,12 @@ app.get('/info', (request, response) => {
 })
 
 app.get('/api/history', (request, response) => {
- response.json(fastingHistory)
+  
+
+  Fast.find({}).then(fastingHistory => {
+    response.json(fastingHistory)
+  })
+
 })
 
 app.get('/api/history/:id', (request, response) => {
@@ -209,29 +218,28 @@ app.get('/api/history/:id', (request, response) => {
 })
 
 app.delete('/api/history/:id', (request, response) => {
- const id = +request.params.id
- fastingHistory = fastingHistory.filter(fast => fast.id !== id)
- response.status(200).end()
+  Fast.findById(request.params.id).then(fast => {
+    response.json(fast)
+  })
 })
 
 app.post('/api/history', (request, response) => {
- const body = request.body
+const body = request.body
 
- if(!body.hours){
-  return response.status(400).json({
-   error: 'duration missing'
+  if(body.endDate === undefined){
+    return response.status(400).json({error: 'date missing'})
+  }
+
+  const fast = new Fast({
+    startDate: body.startDate,
+    endDate: body.endDate,
+    duration: body.duration,
+    hours: body.hours
   })
- }
 
- const fastToSave = {
-  endDate: body.endDate || new Date(),
-  hours: body.hours,
-  id: generateId()
- }
-
- fastingHistory = fastingHistory.concat(fastToSave)
-
- response.json(fastToSave)
+  fast.save().then(savedFast => {
+    response.json(savedFast)
+  })
 })
 
 const errorHandler = (error, request, response, next) => {
@@ -250,6 +258,6 @@ const unknownEndpoint = (request, response) => {
 }
 app.use(unknownEndpoint)
 
-const PORT = process.env.PORT || 3001
+const PORT = process.env.PORT
 app.listen(PORT)
 console.log(`server running on port ${PORT}`)
