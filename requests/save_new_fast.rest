@@ -1,8 +1,16 @@
 POST http://localhost:3001/api/history
 Content-Type: application/json
 
-{
-	"endDate": "07/15/2022",
-	"hours": "13",
-	"userName":"emday4prez"
-}
+	 {
+      "startDate": "2022-07-30T23:56:00.000Z",
+      "endDate": "2022-07-31T16:55:00.000Z",
+      "duration": {
+        "years": 0,
+        "months": 0,
+        "days": 0,
+        "hours": 16,
+        "minutes": 59,
+        "seconds": 0
+      },
+      "hours": 17
+    }
